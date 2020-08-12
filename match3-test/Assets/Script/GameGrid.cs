@@ -9,12 +9,18 @@ public class GameGrid : MonoBehaviour
     public GameObject[] _comida;
     public float C_Widy;
     private RedeDeItem[,] _items;
+    private RedeDeItem _intemAtualmenteAtivo;
     // Start is called before the first frame update
     void Start()
     {
         GetComida();
         fillGrid();
+        RedeDeItem.OnMouseOverItemEventHandler += OnMouseOverItem;
 
+    }
+   void OnDisable (){
+
+        RedeDeItem.OnMouseOverItemEventHandler -= OnMouseOverItem;
     }
     void fillGrid()
     {
@@ -53,12 +59,64 @@ public class GameGrid : MonoBehaviour
         newComida.PosicaoDoItemAlterada(x, y);
         return newComida;
     }
+    IEnumerator Swap(RedeDeItem a, RedeDeItem b)
+    {
+        TrocarRigiboodyStatus(false);// Desativar todos os Corpos Rigidos
+        float movDuration = 0.1f;
+        Vector3 aPosition = a.transform.position;
+        StartCoroutine(a.transform.Move(b.transform.position,movDuration));
+        StartCoroutine(b.transform.Move(aPosition, movDuration));
+        yield return new  WaitForSeconds (movDuration);
+        TrocarRigiboodyStatus(true);// Desativar todos os Corpos Rigidos
+
+    }
+    void OnMouseOverItem(RedeDeItem item)
+    {
+        if (_intemAtualmenteAtivo == item)
+        {
+            return;
+        }
+        if (_intemAtualmenteAtivo != null)
+        {
+            _intemAtualmenteAtivo = item;
+
+
+        }
+        else
+        {
+            float xDiff = Mathf.Abs(item.x - _intemAtualmenteAtivo.x);
+            float yDiff = Mathf.Abs(item.y - _intemAtualmenteAtivo.y);
+            if (xDiff + yDiff == 1)
+            {
+                StartCoroutine(Swap(_intemAtualmenteAtivo, item));
+                
+                //Permetir Swap
+            }
+            else
+            {
+                Debug.LogError("Eles estão a mais de uma unidade longe um do outro");
+                // Negar Swap
+            }
+            
+        }
+        _intemAtualmenteAtivo = null;
+    }
 
     void TrocarRigiboodyStatus(bool status)
     {
 
         foreach (RedeDeItem g in _items)
         {
+            if (status)
+            {
+                g.GetComponent<Rigidbody2D>().isKinematic = true;
+            }
+            else
+            {
+
+
+
+            }
 
 
         }
@@ -69,4 +127,8 @@ public class GameGrid : MonoBehaviour
 
 
     }
+
+
+
+
 }
