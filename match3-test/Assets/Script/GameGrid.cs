@@ -9,7 +9,7 @@ public class GameGrid : MonoBehaviour
     public GameObject[] _comida;
     public float C_Widy;
     private RedeDeItem[,] _items;
-    private RedeDeItem _intemAtualmenteAtivo;
+    private RedeDeItem _itemAtualmenteAtivo;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,18 +29,11 @@ public class GameGrid : MonoBehaviour
         {
             for (int y = 0; y < ySize; y++)
             {
-                InstantieteComida(x, y);
-
-
+                _items[x, y] =(InstantieteComida(x, y));
             }
-
-
-
         }
-
-
-        //}
     }
+
     void GetComida()
     {
         _comida = Resources.LoadAll<GameObject>("Prefabs");
@@ -59,64 +52,66 @@ public class GameGrid : MonoBehaviour
         newComida.PosicaoDoItemAlterada(x, y);
         return newComida;
     }
-    IEnumerator Swap(RedeDeItem a, RedeDeItem b)
-    {
-        TrocarRigiboodyStatus(false);// Desativar todos os Corpos Rigidos
-        float movDuration = 0.1f;
-        Vector3 aPosition = a.transform.position;
-        StartCoroutine(a.transform.Move(b.transform.position,movDuration));
-        StartCoroutine(b.transform.Move(aPosition, movDuration));
-        yield return new  WaitForSeconds (movDuration);
-        TrocarRigiboodyStatus(true);// Desativar todos os Corpos Rigidos
-
-    }
+   
     void OnMouseOverItem(RedeDeItem item)
     {
-        if (_intemAtualmenteAtivo == item)
+        if (_itemAtualmenteAtivo == item)
         {
+            _itemAtualmenteAtivo = null;
             return;
         }
-        if (_intemAtualmenteAtivo != null)
+        if (_itemAtualmenteAtivo == null)
         {
-            _intemAtualmenteAtivo = item;
-
-
+            _itemAtualmenteAtivo = item;
         }
         else
         {
-            float xDiff = Mathf.Abs(item.x - _intemAtualmenteAtivo.x);
-            float yDiff = Mathf.Abs(item.y - _intemAtualmenteAtivo.y);
+            float xDiff = Mathf.Abs(item.x - _itemAtualmenteAtivo.x);
+            float yDiff = Mathf.Abs(item.y - _itemAtualmenteAtivo.y);
             if (xDiff + yDiff == 1)
             {
-                StartCoroutine(Swap(_intemAtualmenteAtivo, item));
+                StartCoroutine(Swap(_itemAtualmenteAtivo, item));
                 
                 //Permetir Swap
             }
+           
             else
             {
                 Debug.LogError("Eles estão a mais de uma unidade longe um do outro");
                 // Negar Swap
             }
-            
+
+            _itemAtualmenteAtivo.
         }
-        _intemAtualmenteAtivo = null;
     }
 
+    IEnumerator Swap(RedeDeItem a, RedeDeItem b)
+    {
+        TrocarRigiboodyStatus(false);// Desativar todos os Corpos Rigidos
+        float movDuration = 0.3f;
+        Vector3 aPosition = a.transform.position;
+        StartCoroutine(a.transform.Move(b.transform.position, movDuration));
+        StartCoroutine(b.transform.Move(aPosition, movDuration));
+        yield return new WaitForSeconds(movDuration);
+        TrocarRigiboodyStatus(true);// Desativar todos os Corpos Rigidos
+        _itemAtualmenteAtivo = null;
+    }
     void TrocarRigiboodyStatus(bool status)
     {
 
         foreach (RedeDeItem g in _items)
         {
-            if (status)
-            {
-                g.GetComponent<Rigidbody2D>().isKinematic = true;
-            }
-            else
-            {
+            g.GetComponent<Rigidbody2D>().isKinematic = !status;
+            //if (status)
+            //{
+            //    g.GetComponent<Rigidbody2D>().isKinematic = true;
+            //}
+            //else
+            //{
 
 
 
-            }
+            //}
 
 
         }
