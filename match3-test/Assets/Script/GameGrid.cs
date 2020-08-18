@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.InteropServices;
 
 public class GameGrid : MonoBehaviour
 {
@@ -16,9 +19,19 @@ public class GameGrid : MonoBehaviour
         GetComida();
         fillGrid();
         RedeDeItem.OnMouseOverItemEventHandler += OnMouseOverItem;
+        List<RedeDeItem> machForItemns = SearchVertically(_items[3,3]);
+        if (machForItemns.Count >= 3) {
 
+            Debug.Log("Há um match Valido para um indice 3x3");
+          
+        
+        }
+        else
+        { 
+            Debug.Log("Não Ha um match valido para indice 3x3");
+        }
     }
-   void OnDisable (){
+    void OnDisable() {
 
         RedeDeItem.OnMouseOverItemEventHandler -= OnMouseOverItem;
     }
@@ -29,11 +42,11 @@ public class GameGrid : MonoBehaviour
         {
             for (int y = 0; y < ySize; y++)
             {
-                _items[x, y] =(InstantieteComida(x, y));
+                _items[x, y] = (InstantieteComida(x, y));
             }
         }
     }
-
+   
     void GetComida()
     {
         _comida = Resources.LoadAll<GameObject>("Prefabs");
@@ -81,7 +94,7 @@ public class GameGrid : MonoBehaviour
                 // Negar Swap
             }
 
-            _itemAtualmenteAtivo.
+            _itemAtualmenteAtivo = null;
         }
     }
 
@@ -123,7 +136,44 @@ public class GameGrid : MonoBehaviour
 
     }
 
+  List<RedeDeItem> SearchHorizontally(RedeDeItem item)
+    {
+        List<RedeDeItem> hItemns = new List<RedeDeItem> { item };
+        int left = item.x - 1;
+        int right = item.x + 1;
+        while (left >= 0 && _items[left, item.y].id == item.id)
+        {
+            hItemns.Add(_items[left, item.y]);
+            left--;
+        }
+        while (right < xSize && _items[right, item.y].id == item.id)
+        {
+            hItemns.Add(_items[right, item.y]);
+            right++;
+           
+        }
 
+        return hItemns;
+    
+  }
+    List<RedeDeItem> SearchVertically (RedeDeItem item)
+    {
+        List<RedeDeItem> vItemns = new List<RedeDeItem> { item };
+        int lower = item.y - 1;
+        int upper = item.y + 1;
+        while (lower>=0 && _items[item.x,lower].id== item.id)
+        {
+            vItemns.Add(_items[item.x, lower]);
+            lower--;
+             
+        }
+        while (upper < ySize && _items[item.x, upper].id == item.id) {
+            vItemns.Add(_items[item.x, upper]);
+            upper++;
+        
+        }
+        return vItemns; 
+    }
 
 
 }
