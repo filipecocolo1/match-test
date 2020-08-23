@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\Script\Extensions\transformExtensions.cs" />
     <Compile Include="Assets\Script\GameGrid.cs" />
+    <Compile Include="Assets\Script\MachInfo.cs" />
     <Compile Include="Assets\Script\RedeDeItem.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/User/Documents/GitHub/match-test/match3-test/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
